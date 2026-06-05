@@ -1,0 +1,128 @@
+{% extends 'appointments/base.html' %}
+{% block title %}Admin Dashboard – MediClinic{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- SIDEBAR -->
+    <div class="col-lg-2 col-md-3 sidebar d-none d-md-block">
+      <div class="sidebar-header"><i class="fas fa-heartbeat me-2"></i>Admin Panel</div>
+      <nav class="nav flex-column">
+        <a class="nav-link active" href="{% url 'admin_dashboard' %}"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+        <a class="nav-link" href="{% url 'manage_appointments' %}"><i class="fas fa-calendar"></i>Appointments</a>
+        <a class="nav-link" href="{% url 'manage_doctors' %}"><i class="fas fa-user-md"></i>Doctors</a>
+        <a class="nav-link" href="{% url 'manage_patients' %}"><i class="fas fa-users"></i>Patients</a>
+        <a class="nav-link" href="{% url 'manage_records' %}"><i class="fas fa-file-medical"></i>Medical Records</a>
+        <a class="nav-link" href="{% url 'view_feedbacks' %}">
+          <i class="fas fa-envelope"></i>Feedbacks
+          {% if unread_feedbacks > 0 %}<span class="badge bg-danger ms-auto">{{ unread_feedbacks }}</span>{% endif %}
+        </a>
+        <hr style="border-color:rgba(255,255,255,.15); margin: 8px 16px">
+        <a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home"></i>Public Site</a>
+        <a class="nav-link text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>Logout</a>
+      </nav>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="col-lg-10 col-md-9 py-4 px-4">
+      <h3 class="fw-bold mb-1">Dashboard Overview</h3>
+      <p class="text-muted mb-4">Welcome, {{ user.get_full_name|default:user.username }}</p>
+
+      <!-- Stats -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="card p-3 stat-card text-center">
+            <i class="fas fa-calendar fa-2x text-primary mb-2"></i>
+            <h3 class="fw-bold text-primary">{{ total_appointments }}</h3>
+            <p class="small text-muted mb-0">Total Appointments</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card p-3 stat-card orange text-center">
+            <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+            <h3 class="fw-bold text-warning">{{ pending }}</h3>
+            <p class="small text-muted mb-0">Pending</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card p-3 stat-card green text-center">
+            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+            <h3 class="fw-bold text-success">{{ approved }}</h3>
+            <p class="small text-muted mb-0">Approved</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card p-3 stat-card red text-center">
+            <i class="fas fa-times-circle fa-2x text-danger mb-2"></i>
+            <h3 class="fw-bold text-danger">{{ cancelled }}</h3>
+            <p class="small text-muted mb-0">Cancelled</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card p-3 text-center">
+            <i class="fas fa-user-md fa-2x text-info mb-2"></i>
+            <h3 class="fw-bold text-info">{{ total_doctors }}</h3>
+            <p class="small text-muted mb-0">Active Doctors</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card p-3 text-center">
+            <i class="fas fa-users fa-2x text-secondary mb-2"></i>
+            <h3 class="fw-bold">{{ total_patients }}</h3>
+            <p class="small text-muted mb-0">Patients</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card p-3 text-center">
+            <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
+            <h3 class="fw-bold text-success">{{ completed }}</h3>
+            <p class="small text-muted mb-0">Completed</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card p-3 text-center">
+            <i class="fas fa-envelope fa-2x text-warning mb-2"></i>
+            <h3 class="fw-bold text-warning">{{ unread_feedbacks }}</h3>
+            <p class="small text-muted mb-0">Unread Feedbacks</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="row g-3 mb-4">
+        <div class="col-12"><h5 class="fw-bold">Quick Actions</h5></div>
+        <div class="col-6 col-md-3"><a href="{% url 'manage_appointments' %}" class="btn btn-outline-primary w-100"><i class="fas fa-calendar me-2"></i>Manage Appointments</a></div>
+        <div class="col-6 col-md-3"><a href="{% url 'add_doctor' %}" class="btn btn-outline-success w-100"><i class="fas fa-plus me-2"></i>Add Doctor</a></div>
+        <div class="col-6 col-md-3"><a href="{% url 'manage_patients' %}" class="btn btn-outline-secondary w-100"><i class="fas fa-users me-2"></i>View Patients</a></div>
+        <div class="col-6 col-md-3"><a href="{% url 'add_record' %}" class="btn btn-outline-info w-100"><i class="fas fa-file-medical me-2"></i>Add Record</a></div>
+      </div>
+
+      <!-- Recent Appointments -->
+      <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+          <h5 class="mb-0 fw-bold">Recent Appointments</h5>
+          <a href="{% url 'manage_appointments' %}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead><tr><th>#</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              {% for appt in recent_appointments %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ appt.patient.get_full_name|default:appt.patient.username }}</td>
+                <td>Dr. {{ appt.doctor.name }}</td>
+                <td>{{ appt.appointment_date|date:"M d, Y" }}</td>
+                <td><span class="badge badge-{{ appt.status }} px-2 py-1 rounded-pill">{{ appt.get_status_display }}</span></td>
+                <td><a href="{% url 'update_appointment' appt.pk %}" class="btn btn-sm btn-outline-primary">Update</a></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="6" class="text-center text-muted py-4">No appointments yet.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
